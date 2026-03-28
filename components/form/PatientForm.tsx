@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
+import { UserFormValidation } from "@/lib/validation";
+import { create } from "domain";
+import { useRouter } from "next/navigation";
 
 export enum FormFieldType {
   INPUT = "input",
@@ -18,25 +21,14 @@ export enum FormFieldType {
   SKELETON = "skeleton",
 }
 
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  phone: z.string().min(7, {
-    message: "Please enter a valid phone number.",
-  }),
-});
-
-type PatientFormValues = z.infer<typeof formSchema>;
+type PatientFormValues = z.infer<typeof UserFormValidation>;
 
 const PatientForm = () => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<PatientFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(UserFormValidation),
     defaultValues: {
       name: "",
       email: "",
@@ -44,10 +36,20 @@ const PatientForm = () => {
     },
   });
 
-  function onSubmit(values: PatientFormValues) {
+  function onSubmit({ name, email, phone }: PatientFormValues) {
     setIsLoading(true);
-    console.log(values);
-    setIsLoading(false);
+
+    try {
+      // const userData = {
+      //   name,
+      //   email,
+      //   phone,
+      // };
+      // const user = await create(userData);
+      // if(user) router.push(`/patients/${user.$id/register`)
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
